@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>圆的周长 · 探秘圆周率 π</title>
+<link href="https://fonts.googleapis.com/css2?family=Long+Cang&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F4EEE0; --card:#FFFDF6; --ink:#2E2A22; --ink2:#7A7060;
+  --red:#C2401D; --red-deep:#9C3212; --green:#1E6B54; --green-d:#134E3E;
+  --gold:#C98F1B; --board:#2C4A3B; --wood:#7A5230; --line:#E0D6C0; --teal:#22708E;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  font-family:"Noto Sans SC",sans-serif; color:var(--ink); background:var(--paper);
+  background-image:
+    repeating-linear-gradient(0deg, rgba(120,100,60,.035) 0 1px, transparent 1px 30px),
+    repeating-linear-gradient(90deg, rgba(120,100,60,.035) 0 1px, transparent 1px 30px);
+  padding:26px 20px 40px;
+}
+.page{max-width:1250px;margin:0 auto}
+header{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
+  border-bottom:2.5px solid var(--ink);padding-bottom:14px;margin-bottom:18px}
+.title-box{display:flex;align-items:center;gap:14px}
+h1{font-family:"Noto Serif SC",serif;font-weight:900;font-size:30px;letter-spacing:2px;line-height:1.15}
+h1 .pi{color:var(--gold);font-style:italic;font-family:Georgia,"Noto Serif SC",serif}
+.sub{font-size:12.5px;color:var(--ink2);margin-top:5px;letter-spacing:.5px}
+.head-note{font-size:12px;color:var(--ink2);text-align:right;line-height:1.7}
+.head-note b{color:var(--red)}
+.layout{display:grid;grid-template-columns:1fr 336px;gap:18px;align-items:start}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;
+  box-shadow:3px 3px 0 rgba(46,42,34,.07)}
+.guide{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;margin-bottom:12px}
+.guide-badge{flex:none;background:var(--red);color:#fff;font-weight:700;font-size:12.5px;
+  padding:4px 10px;border-radius:6px;letter-spacing:2px;margin-top:1px}
+.guide p{font-size:14.5px;line-height:1.65}
+.guide p b{color:var(--green)}
+.stage-wrap{position:relative;overflow:hidden;border-radius:14px}
+#stage{display:block;width:100%}
+.stage-tag{position:absolute;left:14px;top:12px;transform:rotate(-2.5deg);
+  background:rgba(240,215,130,.85);border:1px solid rgba(160,130,50,.4);color:var(--ink);
+  font-size:12px;font-weight:700;padding:4px 14px;letter-spacing:1px;border-radius:2px;
+  box-shadow:1px 2px 3px rgba(60,50,20,.12)}
+.result{position:absolute;right:16px;top:14px;width:196px;background:var(--card);
+  border:1.5px solid var(--ink);border-radius:12px;padding:12px 14px 14px;
+  box-shadow:4px 4px 0 rgba(46,42,34,.14);opacity:0;transform:translateY(-12px);
+  pointer-events:none;transition:.35s cubic-bezier(.2,.9,.3,1.2)}
+.result.show{opacity:1;transform:none}
+.r-title{font-family:"Noto Serif SC",serif;font-weight:900;font-size:14px;letter-spacing:2px;
+  border-bottom:1.5px solid var(--ink);padding-bottom:5px;margin-bottom:8px}
+.r-row{display:flex;justify-content:space-between;font-size:13px;color:var(--ink2);padding:2.5px 0}
+.r-row b{color:var(--ink);font-variant-numeric:tabular-nums}
+.r-row.hl{border-top:1px dashed var(--line);margin-top:5px;padding-top:7px}
+.r-row.hl b{color:var(--red);font-size:16px}
+.stamp{position:absolute;right:-8px;bottom:-10px;transform:rotate(-13deg) scale(0);
+  border:2.5px solid var(--red);color:var(--red);font-weight:900;font-size:13px;
+  padding:3px 11px;border-radius:8px;letter-spacing:3px;background:rgba(255,253,246,.85)}
+.result.show .stamp{animation:stampIn .4s .35s cubic-bezier(.2,2.2,.4,1) forwards}
+@keyframes stampIn{from{transform:rotate(-13deg) scale(2.2);opacity:0}to{transform:rotate(-13deg) scale(1);opacity:1}}
+.controls{display:flex;align-items:center;flex-wrap:wrap;gap:14px;margin-top:12px;padding:13px 16px}
+.seg{display:inline-flex;border:1.5px solid var(--ink);border-radius:10px;overflow:hidden;flex:none}
+.seg button{border:none;background:transparent;color:var(--ink);font-family:inherit;
+  font-size:13.5px;font-weight:700;padding:9px 18px;cursor:pointer;letter-spacing:1px;transition:.18s}
+.seg button+button{border-left:1.5px solid var(--ink)}
+.seg button.on{background:var(--ink);color:var(--paper)}
+.seg button:disabled{opacity:.45;cursor:not-allowed}
+.seg button:not(.on):not(:disabled):hover{background:rgba(46,42,34,.08)}
+.slider-box{display:flex;align-items:center;gap:10px;flex:1;min-width:230px}
+.slider-box label{font-size:13px;font-weight:700;white-space:nowrap}
+.slider-box output{font-weight:700;font-size:14px;min-width:56px;color:var(--red);font-variant-numeric:tabular-nums}
+input[type=range]{flex:1;-webkit-appearance:none;height:4px;border-radius:2px;background:#D8CCB2;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;
+  background:var(--ink);border:3px solid var(--card);box-shadow:0 1px 4px rgba(0,0,0,.3);cursor:pointer}
+input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--ink);
+  border:3px solid var(--card);cursor:pointer}
+input[type=range]:disabled{opacity:.4}
+.btn{font-family:inherit;cursor:pointer;border-radius:10px;font-weight:700;transition:.15s;letter-spacing:1px;
+  display:inline-flex;align-items:center;gap:7px;justify-content:center}
+.btn.primary{background:var(--red);color:#fff;border:none;font-size:15px;padding:10px 24px;
+  box-shadow:0 3px 0 var(--red-deep)}
+.btn.primary:not(:disabled):hover{transform:translateY(-1px);box-shadow:0 4px 0 var(--red-deep)}
+.btn.primary:not(:disabled):active{transform:translateY(2px);box-shadow:0 1px 0 var(--red-deep)}
+.btn.primary:disabled{background:#C9BFA9;box-shadow:0 3px 0 #B0A68F;cursor:not-allowed;color:#F2ECDC}
+.btn.ghost{background:transparent;border:1.5px solid var(--ink);color:var(--ink);font-size:13.5px;padding:9px 16px}
+.btn.ghost:not(:disabled):hover{background:var(--ink);color:var(--paper)}
+.btn.ghost:disabled{opacity:.4;cursor:not-allowed}
+.btn.small{font-size:13px;padding:7px 14px}
+.btn svg{width:12px;height:12px;fill:currentColor}
+.hidden{display:none!important}
+.board-frame{background:var(--wood);border-radius:16px;padding:11px;
+  background-image:repeating-linear-gradient(88deg,rgba(0,0,0,.09) 0 2px,transparent 2px 14px);
+  box-shadow:4px 4px 0 rgba(46,42,34,.14)}
+.board-inner{background:var(--board);border-radius:8px;padding:16px 18px 14px;color:#F2EDDC;
+  box-shadow:inset 0 0 30px rgba(0,0,0,.42)}
+.b-title{font-family:"Long Cang",cursive;font-size:19px;letter-spacing:2px;opacity:.92}
+.b-title .pi{font-family:Georgia,serif;font-style:italic;color:#E8C15A}
+.b-q{color:#E8C15A}
+.b-big{font-family:Georgia,"Noto Serif SC",serif;font-size:46px;font-weight:700;text-align:center;
+  margin:2px 0 6px;font-variant-numeric:tabular-nums;text-shadow:0 0 8px rgba(242,237,220,.28);min-height:54px}
+.b-big .pre{font-size:22px;opacity:.75;font-family:"Long Cang",cursive;margin-right:6px}
+.axis{position:relative;height:56px;margin:4px 2px 2px}
+.ax-base{position:absolute;left:0;right:0;top:14px;height:2px;background:rgba(242,237,220,.5);border-radius:1px}
+.ax-tick{position:absolute;top:10px;width:1.5px;height:10px;background:rgba(242,237,220,.55)}
+.ax-lab{position:absolute;top:24px;transform:translateX(-50%);font-size:9.5px;opacity:.55;font-variant-numeric:tabular-nums}
+.ax-mark{position:absolute;top:5px;width:2px;height:20px;background:#E8C15A;box-shadow:0 0 6px rgba(232,193,90,.6)}
+.ax-pi{position:absolute;top:27px;transform:translateX(-50%);font-size:10.5px;color:#E8C15A;font-family:Georgia,serif;font-style:italic}
+.ax-dot{position:absolute;top:11px;width:8px;height:8px;margin-left:-4px;border-radius:50%;
+  background:#F2EDDC;box-shadow:0 0 5px rgba(242,237,220,.7);animation:dotIn .5s cubic-bezier(.2,1.8,.4,1)}
+.ax-dot.latest{background:#E8C15A;width:10px;height:10px;margin-left:-5px;top:10px;box-shadow:0 0 9px rgba(232,193,90,.9)}
+@keyframes dotIn{from{transform:scale(0)}to{transform:scale(1)}}
+.b-more{font-size:10.5px;opacity:.62;margin-top:6px;letter-spacing:.5px}
+.table-card{margin-top:14px;padding:14px 16px 12px}
+.card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.card-head h3{font-family:"Noto Serif SC",serif;font-weight:900;font-size:15.5px;letter-spacing:2px;
+  padding-left:9px;border-left:4px solid var(--red)}
+#clearBtn{border:none;background:none;color:var(--ink2);font-size:12px;cursor:pointer;font-family:inherit;
+  text-decoration:underline;text-underline-offset:3px}
+#clearBtn:hover{color:var(--red)}
+#clearBtn:disabled{opacity:.4;cursor:not-allowed}
+.table-scroll{max-height:224px;overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{background:#F1E9D6;font-weight:700;padding:7px 6px;font-size:12.5px;color:var(--ink);
+  border-bottom:1.5px solid var(--ink);position:sticky;top:0}
+td{padding:6.5px 6px;text-align:center;border-bottom:1px dashed var(--line);font-variant-numeric:tabular-nums}
+td.ratio{color:var(--red);font-weight:700}
+tr.row-new{animation:rowNew 1.4s ease-out}
+@keyframes rowNew{0%{background:#F2D482}100%{background:transparent}}
+tr.empty td{color:var(--ink2);font-size:12.5px;padding:22px 6px}
+.tfoot{display:flex;justify-content:space-between;padding:8px 6px 2px;font-size:13px;font-weight:700;color:var(--green)}
+.discovery{margin-top:20px;padding:20px 24px 24px}
+.disc-head{display:flex;align-items:baseline;gap:14px;margin-bottom:16px}
+.disc-head h2{font-family:"Noto Serif SC",serif;font-weight:900;font-size:20px;letter-spacing:2px;
+  padding-left:11px;border-left:5px solid var(--red)}
+.disc-head p{font-size:12.5px;color:var(--ink2)}
+.steps{display:grid;grid-template-columns:1fr 1fr 1.25fr;gap:0;margin-bottom:18px}
+.step{display:flex;gap:11px;padding:6px 14px 6px 0;position:relative;align-items:flex-start}
+.step+.step{padding-left:18px}
+.step+.step::before{content:"";position:absolute;left:-8px;top:24px;width:22px;height:2px;background:#CBC0A6}
+.dot-num{flex:none;width:30px;height:30px;border-radius:50%;border:2px solid var(--ink);color:var(--ink);
+  display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;background:var(--card);transition:.3s}
+.step.lit .dot-num{background:var(--green);border-color:var(--green);color:#fff;animation:pop .45s cubic-bezier(.2,1.9,.4,1)}
+@keyframes pop{0%{transform:scale(.4)}70%{transform:scale(1.2)}100%{transform:scale(1)}}
+.s-tx b{display:block;font-size:14px;margin-bottom:2px}
+.step.lit .s-tx b{color:var(--green)}
+.s-tx span{font-size:11.5px;color:var(--ink2)}
+#revealBtn{margin-top:7px}
+.fz{display:grid;grid-template-columns:1.35fr 1fr;gap:16px}
+.formula-card{border:1.5px dashed var(--ink);border-radius:12px;padding:16px 22px;background:#FBF6E8;
+  display:flex;flex-direction:column;justify-content:center;gap:12px}
+.f-line{font-family:Georgia,"Noto Serif SC",serif;font-size:31px;font-weight:700;letter-spacing:3px}
+.f-line.sm{font-size:25px}
+.f-line .c{color:var(--red)} .f-line .pi{color:var(--gold);font-style:italic}
+.f-line .d{color:var(--green)} .f-line .r{color:var(--teal)}
+.f-line i{font-style:normal;font-family:"Noto Sans SC";font-size:12.5px;font-weight:400;color:var(--ink2);margin-left:16px;letter-spacing:1px}
+.f-pop{display:inline-block;animation:fin .5s both;animation-delay:calc(var(--i)*.14s)}
+@keyframes fin{from{opacity:0;transform:translateY(10px) scale(.6)}to{opacity:1;transform:none}}
+.calc-card{border:1.5px solid var(--line);border-radius:12px;padding:15px 18px}
+.calc-card h4{font-size:14px;letter-spacing:1px;margin-bottom:10px;padding-left:8px;border-left:3.5px solid var(--gold)}
+.calc-row{display:flex;align-items:center;gap:8px;font-size:13.5px;flex-wrap:wrap}
+.calc-row input{width:76px;border:1.5px solid var(--ink);border-radius:8px;padding:6px 9px;font-size:14px;
+  font-family:inherit;font-variant-numeric:tabular-nums;background:var(--card);outline:none}
+.calc-row input:focus{border-color:var(--red)}
+.calc-out{margin-top:10px;font-size:13.5px;line-height:1.7;color:var(--green);font-weight:700;min-height:20px;font-variant-numeric:tabular-nums}
+.calc-out.err{color:var(--red)}
+.calc-tip{font-size:11.5px;color:var(--ink2);margin-top:4px;line-height:1.6}
+#verifyBtn{margin-top:9px}
+/* ---------- 应用练习 ---------- */
+.practice{margin-top:22px}
+.p-eyebrow{display:flex;align-items:center;gap:9px;color:var(--red);font-weight:700;font-size:13.5px;letter-spacing:3px}
+.p-eyebrow::before{content:"";width:24px;height:4px;border-radius:2px;background:var(--red)}
+.p-title{font-family:"Noto Serif SC",serif;font-weight:900;font-size:23px;margin:10px 0 6px;letter-spacing:1px}
+.p-desc{font-size:13.5px;color:var(--ink2);margin-bottom:12px}
+.p-card{padding:20px 22px}
+.p-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.p-q{flex:1 1 420px;background:#F2EBDB;border-radius:12px;padding:17px 22px;font-size:17px;line-height:1.6}
+.p-q b.dv{color:#2B5FA8;font-size:19px}
+.p-inputs{display:flex;align-items:center;gap:10px;flex:none}
+#prIn{width:96px;border:1.5px solid #C9BFA9;border-radius:10px;padding:12px 10px;font-size:17px;text-align:center;
+  font-family:inherit;background:#fff;outline:none;font-variant-numeric:tabular-nums;color:var(--ink)}
+#prIn:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(194,64,29,.12)}
+#prIn::placeholder{color:#B9AE97}
+#prIn.ok{border-color:var(--green);background:#F0F7F0}
+#prIn.bad{border-color:var(--red);background:#FBF1EC}
+.p-unit{color:var(--ink2);font-size:14.5px}
+.p-check{font-size:15px;padding:12px 26px}
+.p-new{font-size:15px;padding:12px 22px;background:#FFFDF6}
+.p-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:13px;flex-wrap:wrap}
+.p-fb{font-size:14px;font-weight:700;color:var(--ink2);line-height:1.6}
+.p-fb.ok{color:var(--green)}
+.p-fb.bad{color:var(--red)}
+.p-score{flex:none;background:rgba(30,107,84,.1);color:var(--green);border:1px solid rgba(30,107,84,.25);
+  font-size:12.5px;font-weight:700;padding:5px 13px;border-radius:999px;letter-spacing:1px}
+/* ---------- π 小史 ---------- */
+.history{margin-top:20px;padding:20px 24px 24px}
+.hist-grid{display:grid;grid-template-columns:1.02fr .98fr;gap:16px;align-items:start}
+.hist-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.h-card{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:#FDFAF1}
+.h-card b{display:block;font-family:"Noto Serif SC",serif;font-size:14px;margin-bottom:5px}
+.h-card b em{font-style:normal;font-size:11px;color:var(--gold);margin-left:6px;font-family:"Noto Sans SC";font-weight:700}
+.h-card p{font-size:12.8px;line-height:1.75;color:#5C5344}
+.h-card p b{color:var(--red);font-family:"Noto Sans SC"}
+.h-card p i{font-style:normal;color:var(--green);font-weight:700}
+.cut-wrap{border:1.5px dashed var(--gold);border-radius:12px;padding:14px 16px;background:#FDFAF1}
+.cut-wrap h4{font-size:14px;letter-spacing:1px;margin-bottom:8px;padding-left:8px;border-left:3.5px solid var(--gold)}
+#cutCv{display:block;width:100%;height:250px;border-radius:8px;background:#FBF6E6}
+.cut-read{margin-top:10px;font-size:14px;color:var(--green);font-weight:700;font-variant-numeric:tabular-nums;line-height:1.65;min-height:44px}
+.cut-read b{color:var(--red);font-size:16px}
+.cut-read span{display:block;font-size:12px;color:var(--ink2);font-weight:400}
+.cut-btns{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.cut-btns button{font-family:inherit;cursor:pointer;border:1.5px solid var(--ink);background:transparent;
+  border-radius:8px;padding:5.5px 12px;font-size:12.5px;font-weight:700;color:var(--ink);transition:.15s}
+.cut-btns button.on{background:var(--ink);color:var(--paper)}
+.cut-btns button:not(.on):hover{background:rgba(46,42,34,.08)}
+.cut-tip{font-size:11.5px;color:var(--ink2);margin-top:9px;line-height:1.6}
+footer{margin-top:22px;text-align:center;font-size:12px;color:var(--ink2);line-height:1.8}
+footer b{color:var(--gold)}
+#toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,70px);background:var(--ink);color:var(--paper);
+  padding:10px 22px;border-radius:10px;font-size:13.5px;letter-spacing:1px;transition:.35s cubic-bezier(.2,1.2,.3,1);
+  z-index:50;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+#toast.show{transform:translate(-50%,0)}
+@media (max-width:1060px){
+  .layout{grid-template-columns:1fr}
+  .right-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start}
+  .table-card{margin-top:0}
+  .steps{grid-template-columns:1fr;gap:10px}
+  .step+.step{padding-left:0}.step+.step::before{display:none}
+  .fz,.hist-grid{grid-template-columns:1fr}
+}
+@media (max-width:680px){.right-col{grid-template-columns:1fr}h1{font-size:24px}.head-note{display:none}.hist-cards{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <div class="title-box">
+      <svg viewBox="0 0 64 64" width="54" height="54" aria-hidden="true">
+        <circle cx="32" cy="34" r="23" fill="none" stroke="#2E2A22" stroke-width="3"/>
+        <line x1="9" y1="34" x2="55" y2="34" stroke="#C2401D" stroke-width="2.5" stroke-dasharray="5 4"/>
+        <text x="32" y="26" font-size="18" font-style="italic" font-weight="bold" fill="#C98F1B"
+              text-anchor="middle" font-family="Georgia,serif">π</text>
+      </svg>
+      <div>
+        <h1>圆的周长 —— 探秘圆周率 <span class="pi">π</span></h1>
+        <div class="sub">人教版数学 · 六年级上册 ｜ 动手实验，自己发现</div>
+      </div>
+    </div>
+    <div class="head-note">
+      实验目标：量出几个圆的<b>周长</b>和<b>直径</b>，算一算<br>
+      周长 ÷ 直径 = ？藏着什么不变的规律？
+    </div>
+  </header>
+
+  <main class="layout">
+    <section>
+      <div class="guide card">
+        <span class="guide-badge" id="guideBadge">想一想</span>
+        <p id="guideText"></p>
+      </div>
+
+      <div class="stage-wrap card">
+        <canvas id="stage"></canvas>
+        <div class="stage-tag" id="stageTag">实验方法一 · 滚圆法</div>
+        <div class="result" id="resultCard">
+          <div class="r-title">测量结果</div>
+          <div class="r-row"><span>直径 d</span><b id="rdD">—</b></div>
+          <div class="r-row"><span>周长 C</span><b id="rdC">—</b></div>
+          <div class="r-row hl"><span>C ÷ d</span><b id="rdR">—</b></div>
+          <div class="stamp">已记录</div>
+        </div>
+      </div>
+
+      <div class="controls card">
+        <div class="seg" id="segMethod">
+          <button data-m="roll" class="on">滚圆法</button>
+          <button data-m="wrap">绕绳法</button>
+        </div>
+        <div class="slider-box">
+          <label for="dRange">直径 d</label>
+          <input type="range" id="dRange" min="2" max="10" step="0.5" value="6">
+          <output id="dOut">6 cm</output>
+        </div>
+        <button class="btn primary" id="startBtn">
+          <svg viewBox="0 0 12 12"><path d="M2.5 1.5l8 4.5-8 4.5z"/></svg>开始测量
+        </button>
+        <button class="btn ghost" id="randBtn">
+          <svg viewBox="0 0 14 14"><path d="M12.6 6A5.7 5.7 0 0 0 2.4 3.4L1 2v4h4L3.5 4.5a4.2 4.2 0 0 1 7.6 1.6zM1.4 8a5.7 5.7 0 0 0 10.2 2.6L13 12V8H9l1.5 1.5A4.2 4.2 0 0 1 2.9 7.9z"/></svg>换一个圆
+        </button>
+      </div>
+    </section>
+
+    <aside class="right-col">
+      <div class="board-frame">
+        <div class="board-inner">
+          <div class="b-title">周长 ÷ 直径 = <span class="pi">π</span> <span class="b-q" id="boardQ">= ？</span></div>
+          <div class="b-big" id="boardVal"><span class="pre">待测量…</span></div>
+          <div class="axis" id="axis">
+            <div class="ax-base"></div>
+            <div id="axTicks"></div>
+            <div class="ax-mark" id="axMark"></div>
+            <div class="ax-pi" id="axPi">π ≈ 3.14</div>
+            <div id="axDots"></div>
+          </div>
+          <div class="b-more">更精确的 π ≈ 3.14159265358979…（每次实验的粉笔点都会落在这里）</div>
+        </div>
+      </div>
+
+      <div class="table-card card">
+        <div class="card-head">
+          <h3>实验记录单</h3>
+          <button id="clearBtn">清空记录</button>
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>次数</th><th>直径</th><th>周长 C</th><th>C ÷ d</th></tr></thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+        <div class="tfoot hidden" id="tfoot"></div>
+      </div>
+    </aside>
+  </main>
+
+  <section class="discovery card">
+    <div class="disc-head">
+      <h2>我的发现</h2>
+      <p>不要急着背公式 —— 多做几次实验，让数据自己开口说话。</p>
+    </div>
+    <div class="steps">
+      <div class="step" id="step1">
+        <div class="dot-num">1</div>
+        <div class="s-tx"><b>周长 ÷ 直径 = ？</b><span>完成第 1 次测量后点亮</span></div>
+      </div>
+      <div class="step" id="step2">
+        <div class="dot-num">2</div>
+        <div class="s-tx"><b>比值总在 3.14 附近</b><span>对比 2 次以上的实验记录</span></div>
+      </div>
+      <div class="step" id="step3">
+        <div class="dot-num">3</div>
+        <div class="s-tx">
+          <b>它是一个固定的数：圆周率 π</b>
+          <span id="s3sub">完成 2 次实验后解锁按钮</span><br>
+          <button class="btn ghost small" id="revealBtn" disabled>揭示公式</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="fz">
+      <div class="formula-card hidden" id="formulaCard">
+        <div class="f-line">
+          <span class="f-pop c" style="--i:0">C</span> = <span class="f-pop pi" style="--i:1">π</span> <span class="f-pop d" style="--i:2">d</span>
+          <i>周长 = 圆周率 × 直径</i>
+        </div>
+        <div class="f-line sm">
+          <span class="f-pop c" style="--i:3">C</span> = <span class="f-pop pi" style="--i:4">2π</span> <span class="f-pop r" style="--i:5">r</span>
+          <i>因为 d = 2r，所以 周长 = 圆周率 × 半径 × 2</i>
+        </div>
+      </div>
+      <div class="calc-card">
+        <h4>算一算 · 用公式预测周长</h4>
+        <div class="calc-row">
+          直径 d = <input id="calcIn" type="number" value="5" min="1" step="1"> cm
+          <button class="btn primary small" id="calcBtn">计算</button>
+        </div>
+        <div class="calc-out" id="calcOut">先估一估，再用公式算出周长，然后去舞台上实测验证！</div>
+        <div class="calc-tip">提示：直径为整数（2 ~ 10 cm）。π ≈ 3.14 是近似值，实测结果会在 3.14 附近微微波动，这是正常的。</div>
+        <button class="btn ghost small hidden" id="verifyBtn">把直径调过去，现场验证 →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 应用练习 -->
+  <section class="practice">
+    <div class="p-eyebrow">应用练习</div>
+    <h2 class="p-title">试一试：用公式算周长</h2>
+    <p class="p-desc">系统随机给出一个圆的直径（2 ~ 10 的整数），用 C = πd（π 取 3.14）算出它的周长。</p>
+    <div class="card p-card">
+      <div class="p-row">
+        <div class="p-q">一个圆的直径 d = <b class="dv" id="prD">8</b> cm，它的周长 <b class="fx">C = πd</b> 是多少？</div>
+        <div class="p-inputs">
+          <input id="prIn" type="number" step="0.01" placeholder="?">
+          <span class="p-unit">cm</span>
+          <button class="btn primary p-check" id="prCheck">核对</button>
+          <button class="btn ghost p-new" id="prNew">换一题</button>
+        </div>
+      </div>
+      <div class="p-foot">
+        <div class="p-fb" id="prFb"></div>
+        <div class="p-score" id="prScore">⭐ 已答对 0 题</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 圆周率 π 小史 -->
+  <section class="history card">
+    <div class="disc-head">
+      <h2>圆周率 π 小史</h2>
+      <p>π 不是谁“发明”的，而是人们一代一代“量”出来、“算”出来的。</p>
+    </div>
+    <div class="hist-grid">
+      <div class="hist-cards">
+        <div class="h-card">
+          <b>π 是什么？<em>性质</em></b>
+          <p>任何一个圆，<i>周长 ÷ 直径</i> 都等于同一个数——圆周率，用希腊字母 π 表示。它是无限不循环小数：π = 3.14159265358979…，计算时通常取近似值 3.14。</p>
+        </div>
+        <div class="h-card">
+          <b>刘徽 · 割圆术<em>约公元 263 年</em></b>
+          <p>“割之弥细，所失弥少。”在圆内画正多边形，边数越多，多边形的周长就越接近圆的周长。刘徽算到正 96 边形，得到 π ≈ 3.14。→ 在右边亲手“割”一次！</p>
+        </div>
+        <div class="h-card">
+          <b>祖冲之<em>南北朝 · 约 1500 年前</em></b>
+          <p>他在前人基础上推算出 <b>3.1415926 &lt; π &lt; 3.1415927</b>，还给出了密率 355/113。这一成果领先世界近千年。月球背面的一座环形山，就以“祖冲之”命名。</p>
+        </div>
+        <div class="h-card">
+          <b>今天的 π<em>计算机时代</em></b>
+          <p>借助计算机，人们已经把 π 算到了超过 100 万亿位。不过在小学里，取 π ≈ 3.14 就足够准确啦。</p>
+        </div>
+      </div>
+      <div class="cut-wrap">
+        <h4>动手试 · 刘徽割圆术</h4>
+        <canvas id="cutCv"></canvas>
+        <div class="cut-read" id="cutRead"></div>
+        <div class="cut-btns" id="cutBtns"></div>
+        <p class="cut-tip">边数越多，多边形周长越接近圆的周长——这就是“割之弥细，所失弥少”。祖冲之正是沿着这条路，把 π 推到了小数点后第 7 位。</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    数学小史料：约 1500 年前，我国数学家<b>祖冲之</b>计算出 π 在 3.1415926 与 3.1415927 之间，这个成果领先世界近千年。
+  </footer>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ================= 基础 ================= */
+const VW=920, VH=560;
+const cv=document.getElementById('stage'), ctx=cv.getContext('2d');
+let scaleF=1;
+function fit(){
+  const w=cv.parentElement.getBoundingClientRect().width;
+  const dpr=window.devicePixelRatio||1;
+  cv.width=Math.round(w*dpr); cv.height=Math.round(w*VH/VW*dpr);
+  cv.style.height=(w*VH/VW)+'px';
+  scaleF=cv.width/VW;
+}
+window.addEventListener('resize',()=>{fit();fitCut();});
+
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const lerp=(a,b,t)=>a+(b-a)*t;
+const half=v=>Math.round(v*2)/2;             // 舞台直径：0.5 cm 一档
+const eO=t=>1-Math.pow(1-t,3);
+const eIO=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+const TAU=Math.PI*2;
+
+/* ================= 状态 ================= */
+const S={
+  method:'roll', d:6, phase:'idle', t:0,
+  Cm:0, ratio:0,
+  roll:{x:0, rot:0, trail:[]},
+  wrap:{theta:0, stT:0},
+  meas:{jump:0, jt:0, settle:0, endT:0},
+};
+let experiments=[], revealed=false, piShown=0, piTarget=null, clock=0;
+const busy=()=>['run','mark','straighten','measure'].includes(S.phase);
+const D_MIN=2, D_MAX=10;
+
+/* ===== 场景几何 ===== */
+const PXF=40;                                // 滚圆法：40px = 1cm
+const ROLL={gy:336};                         // 滚动线 = 直尺上缘
+const WRAP={yl:390};                         // 绳拉直后放的直尺上缘
+const pxWrap=()=>Math.min(40, 280/S.d);      // 绕绳法：绳长恒能一屏装下
+const fmtD=(v=S.d)=>(v%1?v.toFixed(1):v.toFixed(0));
+
+/* ===== 视图 v7：优先"一个镜头定到底"，装不下才跟随 =====
+   规则：
+   · 待机：圆放在直尺 0 刻度处（即将起滚的位置），镜头静止；
+   · 全程跨度（红色路程 + 滚完后的圆身）按比例缩小后能装进画面
+     （缩放 ≥ 0.66，直尺毫米刻度仍精细）→ 整个实验【一动不动】；
+   · 只有 d ≥ 8.5 装不下时才以 0.7 倍跟随：滚动时跟圆、量一量时跟直径尺、
+     结束时停在终点（指针 + 圆），画面始终平稳。 */
+const V={s:1, ox:0};
+const FOLLOW_AT=0.66, FOLLOW_S=0.7;
+function viewTarget(){
+  if(S.method==='roll'){
+    const r=S.d/2*PXF, Cpx=Math.PI*S.d*PXF, w=Cpx+2*r;
+    const sFit=Math.min(1,(VW-24)/w);
+    if(S.phase==='idle')
+      return {s:Math.min(1,(ROLL.gy-52)/(2*r)), ox:340};
+    if(sFit>=FOLLOW_AT)                                   // ✔ 装得下：全程静止
+      return {s:sFit, ox:(VW-w*sFit)/2+r*sFit};
+    const SF=FOLLOW_S;                                    // ✘ 装不下：跟随
+    if(S.phase==='run') return {s:SF, ox:330-S.roll.x*SF};
+    if(S.phase==='measure'){
+      const m=S.meas, dpx=S.d*PXF;
+      if(m.jump>3) return {s:SF, ox:VW-10-(Cpx+2*r+30)*SF};   // 量完停住
+      let a0;
+      if(m.jump<=0) a0=0;
+      else a0=lerp((m.jump-1)*dpx, m.jump*dpx, eO(m.jt));
+      return {s:SF, ox:480-(a0+dpx/2)*SF};
+    }
+    return {s:SF, ox:VW-10-(Cpx+2*r+30)*SF};              // done：停在终点
+  }else{
+    const px=pxWrap(), r=S.d/2*px, Lpx=Math.PI*S.d*px;
+    if(S.phase==='idle') return {s:1, ox:200};
+    const w=Math.max(Lpx,260+r)+6;
+    return {s:1, ox:(VW-w)/2};                            // 绳长总装得下：全程静止
+  }
+}
+
+/* ================= DOM 引用 ================= */
+const $=id=>document.getElementById(id);
+const guideBadge=$('guideBadge'), guideText=$('guideText'), stageTag=$('stageTag');
+const startBtn=$('startBtn'), randBtn=$('randBtn'), dRange=$('dRange'), dOut=$('dOut');
+const resultCard=$('resultCard'), rdD=$('rdD'), rdC=$('rdC'), rdR=$('rdR');
+const tbody=$('tbody'), tfoot=$('tfoot'), boardVal=$('boardVal'), boardQ=$('boardQ');
+const axDots=$('axDots'), step1=$('step1'), step2=$('step2'), step3=$('step3');
+const revealBtn=$('revealBtn'), s3sub=$('s3sub'), formulaCard=$('formulaCard');
+const calcIn=$('calcIn'), calcOut=$('calcOut'), verifyBtn=$('verifyBtn');
+const clearBtn=$('clearBtn');
+
+/* ================= 引导语 ================= */
+function updateGuide(){
+  let b='想一想', t='';
+  const n=experiments.length;
+  if(S.phase==='idle'){
+    t = S.method==='roll'
+      ? '圆的边是弯的，直尺量不了，怎么办？古人想了个妙招——<b>滚圆法</b>：让圆在刻度直尺上滚一整圈，红点从 0 刻度出发，滚过的距离就是周长！'
+      : '还有一种老办法——<b>绕绳法</b>：拿一根绳子沿圆边绕一整周，做个记号，再拉直放到刻度尺上量一量它的长度。';
+  }else if(S.phase==='run'){
+    b='看仔细';
+    t = S.method==='roll'
+      ? '红点从 0 刻度出发啦！红色路程就是圆的周长。读数指针指着刻度——猜猜这一圈里藏着几段"直径"？'
+      : '绳头正沿着圆边绕圈，注意看它会不会正好绕满一整周、回到出发点。';
+  }else if(S.phase==='mark'){
+    b='做记号'; t='绕满一整周啦！在绳子重合的地方做个记号——从记号到记号，正好是圆一周的长。';
+  }else if(S.phase==='straighten'){
+    b='拉一拉'; t='把绳子从圆上解下来，轻轻拉直放到刻度尺上……它的长度就等于圆的周长！';
+  }else if(S.phase==='measure'){
+    b='量一量'; t='绿色箭头就是<b>直径 d</b>，它正沿着红色路程一步一步地量：量了几次？最后还多出多少？';
+  }else{
+    if(revealed){ b='结 论'; t='周长 ÷ 直径 = 圆周率 π（π≈3.14）。所以 <b>C = πd</b>；又因为 d = 2r，所以 <b>C = 2πr</b>。'; }
+    else if(n>=2){ b='有发现'; t='不同大小的圆，周长与直径的比值都落在 3.14 附近——这是一个不变的规律！准备好揭开公式了吗？'; }
+    else{ b='记下来'; t=`周长大约是直径的 <b>${S.ratio.toFixed(2)}</b> 倍！记录单已登记。换个圆再量一次，看看比值藏着什么规律。`; }
+  }
+  guideBadge.textContent=b; guideText.innerHTML=t;
+}
+
+/* ================= 记录单 / 黑板 ================= */
+function renderTable(isNew){
+  if(!experiments.length){
+    tbody.innerHTML='<tr class="empty"><td colspan="4">暂无记录 —— 完成一次测量后自动登记</td></tr>';
+    tfoot.classList.add('hidden'); return;
+  }
+  tbody.innerHTML=experiments.map((e,i)=>
+    `<tr class="${isNew&&i===experiments.length-1?'row-new':''}">
+      <td>${i+1}</td><td>${e.d} cm</td><td>${e.C.toFixed(2)} cm</td><td class="ratio">${e.r.toFixed(3)}</td>
+    </tr>`).join('');
+  if(experiments.length>=2){
+    const m=experiments.reduce((s,e)=>s+e.r,0)/experiments.length;
+    tfoot.innerHTML=`<span>平均值（${experiments.length} 次）</span><span>${m.toFixed(3)} → 都在 3.14 附近！</span>`;
+    tfoot.classList.remove('hidden');
+  }else tfoot.classList.add('hidden');
+}
+function initAxis(){
+  const tk=$('axTicks'); tk.innerHTML='';
+  [3.10,3.12,3.14,3.16,3.18,3.20].forEach(v=>{
+    const p=(v-3.10)/0.10*100;
+    tk.insertAdjacentHTML('beforeend',`<span class="ax-tick" style="left:${p}%"></span><span class="ax-lab" style="left:${p}%">${v.toFixed(2)}</span>`);
+  });
+  const mp=(3.14-3.10)/0.10*100;
+  $('axMark').style.left=mp+'%'; $('axPi').style.left=mp+'%';
+}
+function addAxisDot(v){
+  const p=clamp((v-3.10)/0.10*100,2,98);
+  axDots.querySelectorAll('.latest').forEach(x=>x.classList.remove('latest'));
+  const s=document.createElement('span'); s.className='ax-dot latest'; s.style.left=p+'%';
+  axDots.appendChild(s);
+}
+function updateSteps(){
+  const n=experiments.length;
+  step1.classList.toggle('lit',n>=1);
+  step2.classList.toggle('lit',n>=2);
+  revealBtn.disabled = n<2 || revealed;
+  s3sub.textContent = revealed?'公式已揭示':(n<2?`已完成 ${n} 次，还差 ${2-n} 次`:`已完成 ${n} 次实验，可以揭示了`);
+  step3.classList.toggle('lit',revealed);
+  if(revealed) formulaCard.classList.remove('hidden');
+}
+
+/* ================= 流程控制 ================= */
+function resetScene(){
+  S.phase='idle'; S.t=0;
+  S.roll={x:0,rot:0,trail:[]}; S.wrap={theta:0,stT:0};
+  S.meas={jump:0,jt:0,settle:0,endT:0};
+  const vt=viewTarget(); V.s=vt.s; V.ox=vt.ox;   // 视图立即归位
+  setResult(); updateGuide(); syncControls();
+}
+function startMeasure(){
+  if(busy())return;
+  S.d=half(S.d); dRange.value=S.d; dOut.textContent=fmtD()+' cm';
+  resetScene();
+  const eps=(Math.random()*2-1)*0.008;      // 模拟真实测量误差 ±0.8%
+  S.ratio=Math.PI*(1+eps); S.Cm=S.ratio*S.d;
+  S.phase='run'; S.t=0; updateGuide(); syncControls();
+}
+function enterMeasure(){
+  S.phase='measure'; S.t=0;
+  S.meas={jump:0,jt:0,settle:0,endT:0};
+  updateGuide();
+}
+function finishExp(){
+  experiments.push({d:S.d, C:S.Cm, r:S.ratio});
+  renderTable(true); addAxisDot(S.ratio); updateSteps();
+  if(piTarget===null){ piShown=S.ratio-0.45; boardQ.textContent=''; }
+  piTarget=S.ratio;
+  S.phase='done'; setResult(); updateGuide(); syncControls();
+  toast(`第 ${experiments.length} 次实验已登记`);
+}
+function stepMeasure(dt){
+  const m=S.meas;
+  if(m.jump>3){ m.endT+=dt; if(m.endT>=0.75) finishExp(); return; }
+  if(m.jt<1) m.jt=Math.min(1,m.jt+dt/0.55);
+  else{ m.settle+=dt; if(m.settle>=0.55){ m.jump++; m.jt=0; m.settle=0; } }
+}
+function setResult(){
+  if(S.phase!=='done'){ resultCard.classList.remove('show'); return; }
+  rdD.textContent=fmtD()+' cm';
+  rdC.textContent=S.Cm.toFixed(2)+' cm';
+  rdR.textContent='≈ '+S.ratio.toFixed(3);
+  resultCard.classList.add('show');
+}
+function syncControls(){
+  const b=busy();
+  startBtn.disabled=b;
+  startBtn.innerHTML = S.phase==='done'
+    ? '<svg viewBox="0 0 12 12" width="12" height="12" fill="currentColor"><path d="M2.5 1.5l8 4.5-8 4.5z"/></svg>再测一次'
+    : '<svg viewBox="0 0 12 12" width="12" height="12" fill="currentColor"><path d="M2.5 1.5l8 4.5-8 4.5z"/></svg>开始测量';
+  dRange.disabled=b; randBtn.disabled=b; clearBtn.disabled=b;
+  document.querySelectorAll('#segMethod button').forEach(x=>x.disabled=b);
+}
+
+/* ================= 主循环 ================= */
+let last=performance.now();
+function frame(ts){
+  const dt=Math.min(0.05,(ts-last)/1000); last=ts; clock+=dt;
+  const vt=viewTarget(), ke=Math.min(1,dt*5);   // 镜头平滑追踪（静止模式下目标不变=不动）
+  V.s+=(vt.s-V.s)*ke; V.ox+=(vt.ox-V.ox)*ke;
+  update(dt); draw();
+  if(piTarget!==null){
+    piShown+=(piTarget-piShown)*Math.min(1,dt*3.2);
+    boardVal.innerHTML=piShown.toFixed(3);
+  }
+  requestAnimationFrame(frame);
+}
+function update(dt){
+  S.t+=dt;
+  if(S.phase==='run'){
+    if(S.method==='roll'){
+      const r=S.d/2*PXF, Cpx=S.Cm*PXF;
+      S.roll.x+=Cpx/4.4*dt;
+      if(S.roll.x>=Cpx){ S.roll.x=Cpx; enterMeasure(); }
+      else{
+        S.roll.rot=S.roll.x/r;
+        S.roll.trail.push(rollMarkWorld());
+        if(S.roll.trail.length>500)S.roll.trail.shift();
+      }
+    }else{
+      S.wrap.theta+=dt*(TAU/3.4);
+      if(S.wrap.theta>=TAU){ S.wrap.theta=TAU; S.phase='mark'; S.t=0; updateGuide(); }
+    }
+  }else if(S.phase==='mark'){
+    if(S.t>1.05){ S.phase='straighten'; S.t=0; updateGuide(); }
+  }else if(S.phase==='straighten'){
+    S.wrap.stT=Math.min(1,S.t/1.3);
+    if(S.t>1.5) enterMeasure();
+  }else if(S.phase==='measure'){
+    stepMeasure(dt);
+  }
+}
+
+/* ================= 绘制工具 ================= */
+function rrect(x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath();
+}
+function arrowEnd(x,y,ang,size,color){
+  ctx.beginPath();
+  ctx.moveTo(x,y);
+  ctx.lineTo(x-size*Math.cos(ang-0.42), y-size*Math.sin(ang-0.42));
+  ctx.lineTo(x-size*Math.cos(ang+0.42), y-size*Math.sin(ang+0.42));
+  ctx.closePath(); ctx.fillStyle=color; ctx.fill();
+}
+function hArrow(x1,x2,y,color,w){
+  ctx.strokeStyle=color; ctx.lineWidth=w||1.8;
+  ctx.beginPath(); ctx.moveTo(x1,y); ctx.lineTo(x2,y); ctx.stroke();
+  arrowEnd(x1,y,Math.PI,7,color); arrowEnd(x2,y,0,7,color);
+}
+function pill(x0,x1,y,text,color){
+  ctx.font='bold 12.5px "Noto Sans SC"';
+  const tw=ctx.measureText(text).width, cx=(x0+x1)/2;
+  ctx.fillStyle='rgba(255,253,246,.95)'; rrect(cx-tw/2-6,y-11,tw+12,20,5); ctx.fill();
+  ctx.strokeStyle=color; ctx.lineWidth=1.2; rrect(cx-tw/2-6,y-11,tw+12,20,5); ctx.stroke();
+  ctx.fillStyle=color; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText(text,cx,y);
+}
+function diamArrow(x1,x2,y,label,alpha){
+  ctx.save(); ctx.globalAlpha=alpha;
+  hArrow(x1,x2,y,'#1E6B54',1.6);
+  pill(x1,x2,y-9,label,'#1E6B54');
+  ctx.restore();
+}
+/* 滑动卷尺：scale = 屏幕 px / 1cm；比例≥26 画毫米，≥14 画 0.5cm */
+function tape(ox,yTop,alpha,scale){
+  ctx.save(); ctx.globalAlpha=alpha;
+  ctx.fillStyle='#F0E4C3'; rrect(-8,yTop,VW+16,24,3); ctx.fill();
+  ctx.strokeStyle='#D5C295'; ctx.lineWidth=1; ctx.stroke();
+  const c0=Math.max(0,Math.floor(-ox/scale)), c1=Math.floor((VW-ox)/scale);
+  const mm=scale>=26, hp=!mm&&scale>=14;
+  ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+  for(let c=c0;c<=c1;c++){
+    const x=ox+c*scale;
+    if(mm){
+      for(let m2=1;m2<10;m2++){
+        const xm=x+m2*scale/10; if(xm>VW+6)break;
+        ctx.strokeStyle=(m2===5)?'#B49A5E':'#CDBB8E'; ctx.lineWidth=.9;
+        ctx.beginPath(); ctx.moveTo(xm,yTop); ctx.lineTo(xm,yTop+(m2===5?9:4.5)); ctx.stroke();
+      }
+    }else if(hp){
+      ctx.strokeStyle='#B49A5E'; ctx.lineWidth=.9;
+      ctx.beginPath(); ctx.moveTo(x+scale/2,yTop); ctx.lineTo(x+scale/2,yTop+9); ctx.stroke();
+    }
+    ctx.strokeStyle=(c===0)?'#C2401D':'#8B7548'; ctx.lineWidth=1.6;
+    ctx.beginPath(); ctx.moveTo(x,yTop); ctx.lineTo(x,yTop+13); ctx.stroke();
+    if(x<VW-50){
+      ctx.fillStyle=(c===0)?'#C2401D':'#7A6540'; ctx.font='bold 9.5px "Noto Sans SC"';
+      ctx.fillText(c,x+3,yTop+19.5);
+    }
+  }
+  ctx.fillStyle='#A08C5F'; ctx.font='9.5px "Noto Sans SC"'; ctx.textAlign='right';
+  ctx.fillText('单位：cm',VW-12,yTop+19.5);
+  ctx.restore();
+}
+function readPtr(sx,yTop){
+  ctx.fillStyle='#C2401D';
+  ctx.beginPath(); ctx.moveTo(sx,yTop+25); ctx.lineTo(sx-4.5,yTop+33); ctx.lineTo(sx+4.5,yTop+33);
+  ctx.closePath(); ctx.fill();
+}
+function ghostLeft(y,label){
+  ctx.fillStyle='#C2401D';
+  ctx.beginPath(); ctx.moveTo(6,y); ctx.lineTo(16,y-5); ctx.lineTo(16,y+5); ctx.closePath(); ctx.fill();
+  ctx.font='bold 11.5px "Noto Sans SC"'; ctx.textAlign='left'; ctx.textBaseline='middle';
+  ctx.fillText(label,20,y);
+}
+function hint(x,y,t){
+  ctx.fillStyle='#B9AE97'; ctx.font='12px "Noto Sans SC"';
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText(t,x,y);
+}
+function drawHUD(text){
+  ctx.font='bold 13px "Noto Sans SC"';
+  const tw=ctx.measureText(text).width;
+  ctx.fillStyle='rgba(46,42,34,.85)'; rrect(VW-tw-30,40,tw+20,26,8); ctx.fill();
+  ctx.fillStyle='#FFE9B8'; ctx.textAlign='left'; ctx.textBaseline='middle';
+  ctx.fillText(text,VW-tw-20,53.5);
+}
+function bubble(x,y,text){
+  ctx.font='bold 13.5px "Noto Sans SC"';
+  const tw=ctx.measureText(text).width;
+  const bx=x-tw/2-12, by=y-16, bw=tw+24;
+  ctx.fillStyle='#C2401D'; rrect(bx,by,bw,28,9); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(x-6,by+28); ctx.lineTo(x+6,by+28); ctx.lineTo(x,by+36); ctx.closePath(); ctx.fill();
+  ctx.fillStyle='#FFF8EE'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText(text,x,by+14.5);
+}
+
+/* ===== 量一量：三段直径方块直接画在真实路程上（与圆同比例，严格等长） ===== */
+function drawMeasure(A,W){
+  const dpx=S.d*W, ratio=S.ratio;
+  const bx=[0,1,2,3,ratio].map(v=>v*dpx);
+  const tx=wx=>wx*V.s+V.ox, ty=wy=>A-(A-wy)*V.s;
+  const m=S.meas, allDone=S.phase==='done';
+  const lblLong=dpx>=112, arrowLong=dpx>=110;
+
+  /* ① 三段直径方块 + 余段方块 */
+  for(let k=0;k<4;k++){
+    if(!allDone && k>m.jump) break;
+    let w0,w1,dy=0,al=1,done;
+    if(allDone||k<m.jump||(k===m.jump&&m.settle>0)){ w0=bx[k]; w1=bx[k+1]; done=true; }
+    else{
+      const e=eO(m.jt); done=false;
+      if(k===0){ w0=bx[0]; w1=bx[1]; dy=(1-e)*-34; al=.25+.75*e; }
+      else if(k<3){ w0=lerp(bx[k-1],bx[k],e); w1=w0+dpx; }
+      else{ w0=bx[3]; w1=bx[3]+(bx[4]-bx[3])*e; }
+    }
+    const L=tx(w0),R=tx(w1),T=ty(A-28)+dy*V.s,B=ty(A-6)+dy*V.s,last=k===3;
+    ctx.globalAlpha=al;
+    ctx.fillStyle=last?'rgba(194,64,29,.26)':'rgba(30,107,84,.24)';
+    ctx.strokeStyle=last?'rgba(194,64,29,.95)':'rgba(30,107,84,.9)';
+    ctx.lineWidth=1.6;
+    rrect(L,T,R-L,B-T,4); ctx.fill();
+    if(allDone&&last) ctx.globalAlpha=.5+.5*Math.sin(clock*5);
+    ctx.stroke(); ctx.globalAlpha=al;
+    if(done&&!last){
+      ctx.fillStyle='#134E3E'; ctx.font='bold 13px "Noto Sans SC"';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(k+1,(L+R)/2,(T+B)/2+1);
+    }
+    ctx.globalAlpha=1;
+  }
+
+  /* ② 绿色"直径尺"箭头：正踩在第几段上 */
+  if(!allDone && m.jump<=3){
+    let a0;
+    if(m.jump>0&&m.jt<1) a0=lerp(bx[m.jump-1],bx[m.jump],eO(m.jt));
+    else a0=bx[Math.min(m.jump,3)];
+    const y=ty(A-44);
+    hArrow(tx(a0),tx(a0+dpx),y,'#1E6B54',2);
+    pill(tx(a0),tx(a0+dpx),y,(arrowLong?'直径 d = ':'d = ')+fmtD()+' cm','#1E6B54');
+  }
+
+  /* ③ 直尺下方的分隔刻度与"n 个直径"文字 */
+  ctx.textAlign='center'; ctx.textBaseline='alphabetic';
+  for(let k=1;k<=3;k++){
+    const x=tx(k*dpx), lit=allDone||m.jump>=k;
+    ctx.strokeStyle=lit?'#1E6B54':'rgba(30,107,84,.4)'; ctx.lineWidth=1.6;
+    ctx.beginPath(); ctx.moveTo(x,A+27); ctx.lineTo(x,A+36); ctx.stroke();
+    ctx.font=(lit?'bold ':'')+'11.5px "Noto Sans SC"';
+    ctx.fillStyle=lit?'#1E6B54':'rgba(30,107,84,.45)';
+    ctx.fillText(lblLong?(k+'个直径 = '+fmtD()+'cm'):(k+'个直径'), (tx(bx[k-1])+tx(bx[k]))/2, A+53);
+  }
+
+  /* ④ 多出的一小段（红色脉动）+ 引出标注 */
+  if(allDone||(S.phase==='measure'&&m.jump>=3)){
+    const x0=tx(bx[3]), x1=tx(bx[4]);
+    ctx.globalAlpha=.7+.3*Math.sin(clock*5);
+    ctx.strokeStyle='#C2401D'; ctx.lineWidth=4;
+    ctx.beginPath(); ctx.moveTo(x0,A); ctx.lineTo(x1,A); ctx.stroke();
+    ctx.lineWidth=1.6;
+    ctx.beginPath(); ctx.moveTo(x1,A-5); ctx.lineTo(x1,A+5); ctx.stroke();
+    ctx.globalAlpha=1;
+    const lx=clamp((x0+x1)/2,96,VW-96);
+    ctx.strokeStyle='rgba(194,64,29,.7)'; ctx.lineWidth=1.2;
+    ctx.beginPath(); ctx.moveTo((x0+x1)/2,A+38); ctx.lineTo(lx,A+64); ctx.stroke();
+    ctx.fillStyle='#C2401D'; ctx.font='bold 12px "Noto Sans SC"'; ctx.textAlign='center';
+    ctx.fillText('还多出 ≈'+(ratio-3).toFixed(2)+' 个直径', lx, A+77);
+  }
+}
+
+/* ================= 场景一：滚圆法 ================= */
+function rollMarkWorld(){
+  const r=S.d/2*PXF, a=Math.PI/2+S.roll.rot;
+  return {x:S.roll.x + r*Math.cos(a), y:ROLL.gy - r + r*Math.sin(a)};
+}
+function drawRoll(){
+  const A=ROLL.gy, r=S.d/2*PXF, Cpx=S.Cm*PXF;
+  const tx=wx=>wx*V.s+V.ox, ty=wy=>A-(A-wy)*V.s;
+  const after=S.phase==='measure'||S.phase==='done';
+
+  tape(V.ox,A,1,PXF*V.s);
+
+  if(S.phase!=='idle'){                        // 尺上的红色已滚路程（真实周长）
+    ctx.strokeStyle='#C2401D'; ctx.lineWidth=4; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(tx(0),A); ctx.lineTo(tx(S.roll.x),A); ctx.stroke();
+    if(tx(0)<-6) ghostLeft(A-14,'0 cm 出发点');
+  }
+  S.roll.trail.forEach((p,i)=>{                // 红点的摆线轨迹
+    ctx.globalAlpha=.06+.3*(i/S.roll.trail.length);
+    ctx.fillStyle='#C2401D'; ctx.beginPath(); ctx.arc(tx(p.x),ty(p.y),1.7,0,TAU); ctx.fill();
+  });
+  ctx.globalAlpha=1;
+
+  const cx=tx(S.roll.x), cy=ty(A-r), rr=r*V.s;
+  if(after) ctx.globalAlpha=S.phase==='measure'?.22:.35;
+  ctx.fillStyle='#FFFDF6'; ctx.strokeStyle='#2E2A22'; ctx.lineWidth=2.5;
+  ctx.beginPath(); ctx.arc(cx,cy,rr,0,TAU); ctx.fill(); ctx.stroke();
+  ctx.fillStyle='#2E2A22'; ctx.beginPath(); ctx.arc(cx,cy,2.2,0,TAU); ctx.fill();
+
+  if(S.phase==='idle'){
+    diamArrow(cx-rr+4,cx+rr-4,cy,'d = '+fmtD()+' cm',1);
+  }else if(!after){
+    const a=S.roll.rot, dx=rr*Math.cos(a), dy2=rr*Math.sin(a);
+    ctx.strokeStyle='rgba(30,107,84,.75)'; ctx.lineWidth=1.4; ctx.setLineDash([5,4]);
+    ctx.beginPath(); ctx.moveTo(cx-dx,cy-dy2); ctx.lineTo(cx+dx,cy+dy2); ctx.stroke(); ctx.setLineDash([]);
+    ctx.font='bold 13px "Noto Sans SC"';
+    const t='d = '+fmtD()+' cm', tw=ctx.measureText(t).width;
+    ctx.fillStyle='rgba(255,253,246,.8)'; rrect(cx-tw/2-5,cy-rr-25,tw+10,19,4); ctx.fill();
+    ctx.fillStyle='#1E6B54'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(t,cx,cy-rr-15);
+  }
+  ctx.globalAlpha=1;
+
+  const mp=rollMarkWorld(), mx=tx(mp.x), my=ty(mp.y);
+  ctx.strokeStyle='rgba(194,64,29,.5)'; ctx.lineWidth=1.2;
+  ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(mx,my); ctx.stroke();
+  if(S.phase==='idle'){
+    const pr=8+(clock%1.6)/1.6*12;
+    ctx.strokeStyle='rgba(194,64,29,'+(0.7*(1-(clock%1.6)/1.6))+')'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.arc(mx,my,pr,0,TAU); ctx.stroke();
+  }
+  ctx.fillStyle='#C2401D'; ctx.strokeStyle='#FFFDF6'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.arc(mx,my,4.5,0,TAU); ctx.fill(); ctx.stroke();
+
+  if(after) drawMeasure(A,PXF);                // 直径方块画在真实路程上
+
+  if(S.phase==='run'){
+    readPtr(tx(S.roll.x),A);
+    drawHUD('已滚动 '+(S.roll.x/PXF).toFixed(2)+' cm');
+  }
+  if(S.phase==='measure'){
+    readPtr(tx(Cpx),A);
+    drawHUD(S.meas.jump<=2?`直径尺：第 ${S.meas.jump+1} 次度量…`:'3 次量完，还多出一小段！');
+  }
+  if(S.phase==='done'){
+    readPtr(tx(Cpx),A);
+    bubble(clamp(tx(2.5*S.d*PXF),120,VW-120), ty(A-28)-58,'周长 C ≈ '+S.Cm.toFixed(2)+' cm');
+  }
+  if(!after) hint(460,A+108,'滚动完成后，绿色"直径尺"将在这段红色路程上一步步量过去');
+}
+
+/* ================= 场景二：绕绳法 ================= */
+function drawWrap(){
+  const px=pxWrap(), A=WRAP.yl, r=S.d/2*px, rr_=r+3, Lpx=S.Cm*px;
+  const tx=wx=>wx*V.s+V.ox, ty=wy=>A-(A-wy)*V.s;
+  const after=S.phase==='measure'||S.phase==='done';
+  const cx=260, cy=A-r-36;                     // 圆的世界坐标（路程起点上方）
+  const gcx=tx(cx), gcy=ty(cy), grr=r*V.s;
+
+  if(after) ctx.globalAlpha=.3;
+  ctx.fillStyle='#FFFDF6'; ctx.strokeStyle='#2E2A22'; ctx.lineWidth=2.5;
+  ctx.beginPath(); ctx.arc(gcx,gcy,grr,0,TAU); ctx.fill(); ctx.stroke();
+  ctx.fillStyle='#2E2A22'; ctx.beginPath(); ctx.arc(gcx,gcy,2.2,0,TAU); ctx.fill();
+  ctx.globalAlpha=1;
+  diamArrow(gcx-grr+4,gcx+grr-4,gcy,'d = '+fmtD()+' cm',after?.4:1);
+
+  if(!after){
+    ctx.strokeStyle='#8A5A2B'; ctx.lineWidth=5; ctx.lineCap='round';
+    ctx.beginPath(); ctx.arc(gcx,gcy,grr+3*V.s,0,TAU); ctx.stroke();
+    if(S.phase==='run'){
+      ctx.save(); ctx.shadowColor='rgba(232,161,59,.8)'; ctx.shadowBlur=8;
+      ctx.strokeStyle='#E39A3B';
+      ctx.beginPath(); ctx.arc(gcx,gcy,grr+3*V.s,Math.PI/2,Math.PI/2+S.wrap.theta); ctx.stroke(); ctx.restore();
+      const ha=Math.PI/2+S.wrap.theta;
+      const hx=gcx+(grr+3*V.s)*Math.cos(ha), hy=gcy+(grr+3*V.s)*Math.sin(ha);
+      const txa=-Math.sin(ha), tya=Math.cos(ha);
+      ctx.strokeStyle='#6B4520'; ctx.lineWidth=1.6;
+      for(let i=0;i<3;i++){
+        const an=Math.atan2(tya,txa)+Math.PI+(i-1)*0.5, ln=6+i*2.5;
+        ctx.beginPath(); ctx.moveTo(hx,hy);
+        ctx.lineTo(hx+ln*Math.cos(an),hy+ln*Math.sin(an)); ctx.stroke();
+      }
+      ctx.fillStyle='#4A2E12'; ctx.beginPath(); ctx.arc(hx,hy,3.5,0,TAU); ctx.fill();
+    }
+    if(S.phase==='idle'){
+      const ax=gcx, ay=gcy+grr+3*V.s;
+      ctx.fillStyle='#4A2E12'; ctx.beginPath(); ctx.arc(ax,ay,3.2,0,TAU); ctx.fill();
+      ctx.strokeStyle='rgba(201,143,27,'+(0.6+0.4*Math.sin(clock*3))+')'; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.arc(ax,ay,9,0,TAU); ctx.stroke();
+    }
+    if(S.phase==='mark'){
+      ctx.save(); ctx.globalAlpha=0.55+0.45*Math.sin(clock*6);
+      ctx.strokeStyle='#E39A3B'; ctx.lineWidth=5;
+      ctx.beginPath(); ctx.arc(gcx,gcy,grr+3*V.s,0,TAU); ctx.stroke(); ctx.restore();
+      const t=Math.min(1,S.t/1.0);
+      ctx.strokeStyle='rgba(232,193,90,'+(1-t)+')'; ctx.lineWidth=2.5;
+      ctx.beginPath(); ctx.arc(gcx,gcy+grr,6+t*26,0,TAU); ctx.stroke();
+      bubble(gcx, gcy-grr-46,'绕满一周，做个记号！');
+      const mx0=tx(cx), my0=ty(cy+rr_);
+      ctx.strokeStyle='#C2401D'; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.moveTo(mx0-5,my0-5); ctx.lineTo(mx0+5,my0+5);
+      ctx.moveTo(mx0+5,my0-5); ctx.lineTo(mx0-5,my0+5); ctx.stroke();
+    }
+    if(S.phase==='straighten'){
+      tape(V.ox,A,Math.min(1,S.wrap.stT*1.6),px*V.s);
+      const k=eIO(S.wrap.stT);
+      ctx.strokeStyle='#B8792F'; ctx.lineWidth=5; ctx.lineCap='round'; ctx.lineJoin='round';
+      ctx.beginPath();
+      for(let i=0;i<=56;i++){
+        const u=i/56, a=Math.PI/2+u*TAU;
+        const axp=tx(cx+rr_*Math.cos(a)), ayp=ty(cy+rr_*Math.sin(a));
+        const lxp=tx(u*Lpx), lyp=ty(A);
+        const wob=Math.sin(u*10-S.wrap.stT*10)*13*Math.sin(Math.PI*S.wrap.stT);
+        const X=lerp(axp,lxp,k), Y=lerp(ayp,lyp,k)+wob;
+        i?ctx.lineTo(X,Y):ctx.moveTo(X,Y);
+      }
+      ctx.stroke();
+      readPtr(tx(Lpx*S.wrap.stT),A);
+      drawHUD('绳长读数：'+(Lpx*S.wrap.stT/px).toFixed(2)+' cm');
+    }
+  }
+
+  if(after){
+    tape(V.ox,A,1,px*V.s);
+    ctx.strokeStyle='#B8792F'; ctx.lineWidth=5; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(tx(0),A); ctx.lineTo(tx(Lpx),A); ctx.stroke();
+    if(tx(0)>-6){
+      const mx0=tx(0);
+      ctx.strokeStyle='#C2401D'; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.moveTo(mx0-5,A-5); ctx.lineTo(mx0+5,A+5);
+      ctx.moveTo(mx0+5,A-5); ctx.lineTo(mx0-5,A+5); ctx.stroke();
+    }else ghostLeft(A-14,'绳头起点 0 cm');
+    readPtr(tx(Lpx),A);
+    drawMeasure(A,px);
+    if(S.phase==='measure')
+      drawHUD(S.meas.jump<=2?`直径尺：第 ${S.meas.jump+1} 次度量…`:'3 次量完，还多出一小段！');
+    if(S.phase==='done') bubble(clamp(tx(2.5*S.d*px),120,VW-120), ty(A-28)-58,'周长 C ≈ '+S.Cm.toFixed(2)+' cm');
+  }
+  if(S.phase==='idle'||S.phase==='run'||S.phase==='mark')
+    hint(460,A+100,'绳子拉直后，会放在这把刻度尺上读出周长');
+}
+
+/* ================= 总绘制 ================= */
+function draw(){
+  ctx.setTransform(scaleF,0,0,scaleF,0,0);
+  ctx.clearRect(0,0,VW,VH);
+  ctx.fillStyle='#E9E0CA';
+  for(let x=23;x<VW;x+=46)for(let y=23;y<VH;y+=46)ctx.fillRect(x,y,2,2);
+  (S.method==='roll'?drawRoll:drawWrap)();
+}
+
+/* ================= 割圆术演示 ================= */
+const CUTNS=[6,12,24,48,96,192];
+let cutN=6, cutW=0;
+const cutCv=$('cutCv'), cctx=cutCv.getContext('2d');
+function fitCut(){
+  const w=cutCv.clientWidth; if(!w)return;
+  const dpr=window.devicePixelRatio||1;
+  cutW=w; cutCv.width=w*dpr; cutCv.height=250*dpr;
+  cctx.setTransform(dpr,0,0,dpr,0,0); drawCut();
+}
+function drawCut(){
+  if(!cutW)return;
+  cctx.clearRect(0,0,cutW,250);
+  const cx=cutW/2, cy=118, R=88;
+  cctx.strokeStyle='#2E2A22'; cctx.lineWidth=2;
+  cctx.beginPath(); cctx.arc(cx,cy,R,0,TAU); cctx.stroke();
+  cctx.beginPath();
+  for(let i=0;i<=cutN;i++){
+    const a=-Math.PI/2+i/cutN*TAU;
+    const x=cx+R*Math.cos(a), y=cy+R*Math.sin(a);
+    i?cctx.lineTo(x,y):cctx.moveTo(x,y);
+  }
+  cctx.fillStyle='rgba(194,64,29,.13)'; cctx.fill();
+  cctx.strokeStyle='#C2401D'; cctx.lineWidth=1.7; cctx.stroke();
+  cctx.fillStyle='#C2401D';
+  for(let i=0;i<cutN;i++){
+    const a=-Math.PI/2+i/cutN*TAU;
+    cctx.beginPath(); cctx.arc(cx+R*Math.cos(a),cy+R*Math.sin(a),2.2,0,TAU); cctx.fill();
+  }
+  cctx.fillStyle='#2E2A22'; cctx.beginPath(); cctx.arc(cx,cy,2,0,TAU); cctx.fill();
+  const ratio=cutN*Math.sin(Math.PI/cutN);
+  const diff=Math.PI-ratio;
+  $('cutRead').innerHTML=
+    `正 <b>${cutN}</b> 边形：周长 ÷ 直径 ≈ <b>${ratio.toFixed(5)}</b>`+
+    `<span>与真正的 π 还差 ${diff>=0.000005?diff.toFixed(5):'不到 0.000005'} —— 无限割下去，就是 π</span>`;
+}
+function initCut(){
+  const box=$('cutBtns');
+  CUTNS.forEach(n=>{
+    const b=document.createElement('button');
+    b.textContent=`正${n}边形`;
+    b.addEventListener('click',()=>{
+      cutN=n;
+      [...box.children].forEach(x=>x.classList.toggle('on',x===b));
+      drawCut();
+    });
+    box.appendChild(b);
+  });
+  box.children[0].classList.add('on');
+  fitCut();
+}
+
+/* ================= 应用练习（直径为整数） ================= */
+const prIn=$('prIn'), prFb=$('prFb'), prScoreEl=$('prScore');
+let prD=8, prTries=0, prOK=0, prSolved=false;
+function prSetFb(msg,cls){ prFb.textContent=msg; prFb.className='p-fb'+(cls?' '+cls:''); }
+function prNewQ(){
+  let v; do{ v=D_MIN+Math.floor(Math.random()*(D_MAX-D_MIN+1)); }while(v===prD);  // 整数 2~10
+  prD=v; prTries=0; prSolved=false;
+  $('prD').textContent=v;
+  prIn.value=''; prIn.classList.remove('ok','bad');
+  prSetFb('先笔算：C = 3.14 × '+v+' = ？把结果填进去，点「核对」。','');
+}
+function prCheck(){
+  if(prSolved){ prSetFb('这题已经答对啦，点「换一题」继续挑战！','ok'); return; }
+  const raw=prIn.value.trim();
+  prIn.classList.remove('ok','bad');
+  if(raw===''){ prSetFb('请先填入你算出的周长','bad'); prIn.classList.add('bad'); prIn.focus(); return; }
+  const v=parseFloat(raw);
+  if(isNaN(v)){ prSetFb('请输入一个数字','bad'); prIn.classList.add('bad'); return; }
+  const ans=Math.round(3.14*prD*100)/100;
+  if(Math.abs(v-ans)<0.005){
+    prSolved=true; prOK++;
+    prScoreEl.textContent='⭐ 已答对 '+prOK+' 题';
+    prIn.classList.add('ok');
+    prSetFb('✓ 答对啦！C = 3.14 × '+prD+' = '+ans.toFixed(2)+' cm。点「换一题」继续！','ok');
+    toast('答对 +1，继续保持！');
+  }else{
+    prTries++;
+    prIn.classList.add('bad');
+    if(prTries>=2) prSetFb('还没对。列出算式再算一遍：C = 3.14 × '+prD+' = ？','bad');
+    else prSetFb('还没对哦。提示：周长 = 圆周率 × 直径，π 取 3.14。','bad');
+  }
+}
+$('prCheck').addEventListener('click',prCheck);
+$('prNew').addEventListener('click',prNewQ);
+prIn.addEventListener('keydown',e=>{ if(e.key==='Enter')prCheck(); });
+
+/* ================= 事件 ================= */
+$('segMethod').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b||busy())return;
+  S.method=b.dataset.m;
+  document.querySelectorAll('#segMethod button').forEach(x=>x.classList.toggle('on',x===b));
+  stageTag.textContent=S.method==='roll'?'实验方法一 · 滚圆法':'实验方法二 · 绕绳法';
+  resetScene();
+});
+dRange.addEventListener('input',()=>{
+  if(busy()){dRange.value=S.d;return;}
+  S.d=half(parseFloat(dRange.value));
+  dRange.value=S.d; dOut.textContent=fmtD()+' cm'; resetScene();
+});
+startBtn.addEventListener('click',startMeasure);
+randBtn.addEventListener('click',()=>{
+  if(busy())return;
+  let v; do{ v=half(D_MIN+Math.round(Math.random()*(D_MAX-D_MIN)*2)*0.5); }while(v===S.d);
+  S.d=v; dRange.value=v; dOut.textContent=fmtD()+' cm';
+  resetScene(); toast('换了一个新圆（d = '+fmtD()+' cm），再量量看！');
+});
+clearBtn.addEventListener('click',()=>{
+  if(busy())return;
+  experiments=[]; revealed=false; piTarget=null; piShown=0;
+  boardVal.innerHTML='<span class="pre">待测量…</span>'; boardQ.textContent='= ？';
+  axDots.innerHTML=''; formulaCard.classList.add('hidden');
+  renderTable(false); updateSteps(); resetScene(); toast('记录已清空，重新开始探究吧');
+});
+revealBtn.addEventListener('click',()=>{
+  if(experiments.length<2||revealed)return;
+  revealed=true; updateSteps(); updateGuide();
+  toast('公式揭晓：C = πd = 2πr');
+});
+$('calcBtn').addEventListener('click',()=>{
+  const v=Math.round(parseFloat(calcIn.value));
+  if(!(v>0)){ calcOut.textContent='请输入一个大于 0 的整数直径'; calcOut.classList.add('err'); verifyBtn.classList.add('hidden'); return; }
+  calcIn.value=v;
+  calcOut.classList.remove('err');
+  const C=3.14*v;
+  calcOut.textContent=`C = πd ≈ 3.14 × ${v} = ${C.toFixed(2)} cm`;
+  verifyBtn.classList.remove('hidden'); verifyBtn.dataset.d=v;
+});
+calcIn.addEventListener('keydown',e=>{ if(e.key==='Enter')$('calcBtn').click(); });
+/* 一键实测验证：整数直径直接对应舞台档位 */
+verifyBtn.addEventListener('click',()=>{
+  const v=parseFloat(verifyBtn.dataset.d); if(!(v>0))return;
+  const vc=Math.round(clamp(v,D_MIN,D_MAX));
+  toast(`直径已调到 ${vc} cm，开始实测验证！`);
+  S.d=vc; dRange.value=vc; dOut.textContent=fmtD(vc)+' cm';
+  resetScene(); setTimeout(startMeasure,350);
+  window.scrollTo({top:0,behavior:'smooth'});
+});
+let toastTimer=null;
+function toast(msg){
+  const t=$('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2400);
+}
+
+/* ================= 启动 ================= */
+fit(); initAxis(); initCut(); prNewQ();
+renderTable(false); updateSteps(); updateGuide(); syncControls();
+requestAnimationFrame(ts=>{last=ts;requestAnimationFrame(frame);});
+</script>
+</body>
+</html>
